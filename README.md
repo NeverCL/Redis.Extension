@@ -29,21 +29,16 @@
 - Redis 存储结构:key-value
 - 持久化(容灾)
     - snapshot(快照)
-        - 默认的方式
+        - Redis默认持久化方式，每次保存RDB的时候，fork()出1个子进程进行持久化
         - dump.rdb
         - 配置n秒超过m个key 开始快照
+        - 性能高，丢失数据比较多
     - Append-only file(aof)
-        - 每插入一条就存储
-        - appendfilename "appendonly.aof"
+        - 新命令到达则fsync一次，文件足够大的时候，rewrite一次。
+        - appendfilename "appendonly.aof" 设置存储文件
         - appendfsync 设置频率
-
-- 单线程
-
-- 现场申请内存
-
-- 虚拟内存
-
-- 主从复制
+        - auto-aof-rewrite 设置自动重写
+        - 性能稍慢，丢失数据非常少
 
 - 5种数据类型:string,list(链表),hash(哈希),set(集合),zset(排序集合)
 
