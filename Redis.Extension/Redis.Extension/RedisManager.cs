@@ -4,35 +4,30 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace Redis.Extension
 {
-    public class RedisManager : IDisposable
+    public class RedisManager : IRedisManager, IDisposable
     {
-        static ConnectionMultiplexer _redis;
+        private ConnectionMultiplexer _redis;
+        private readonly ConfigurationOptions _configurationOptions;
 
-        /// <summary>
-        /// 默认取第一个数据库实例
-        /// </summary>
-        public static IDatabase RedisDatabaseInstance => ConnectionMultiplexer.GetDatabase();
+        public RedisManager(string connectionString)
+        {
+            _configurationOptions = new ConfigurationOptions
+            {
+                EndPoints = { connectionString }
+            };
+        }
 
-        /// <summary>
-        /// 默认取第一个服务实例
-        /// </summary>
-        public static IServer RedisServerInstance => ConnectionMultiplexer.GetServer(ConnectionMultiplexer.GetEndPoints()[0]);
+        public RedisManager(ConfigurationOptions configurationOptions)
+        {
+            _configurationOptions = configurationOptions;
+        }
 
-        //public static IDatabase GetRedisDatabase(int db)
-        //{
-        //    return ConnectionMultiplexer.GetDatabase(db);
-        //}
-
-        //public static IServer GetRedisServer(int db)
-        //{
-        //    return ConnectionMultiplexer.GetServer(ConnectionMultiplexer.GetEndPoints()[db]);
-        //}
-
-        public static ConnectionMultiplexer ConnectionMultiplexer
+        public ConnectionMultiplexer ConnectionMultiplexer
         {
             get
             {
@@ -41,7 +36,7 @@ namespace Redis.Extension
                     lock ("RedisManager锁")
                     {
                         if (_redis != null) return _redis;
-                        _redis = GetManager();
+                        _redis = ConnectionMultiplexer.Connect(_configurationOptions);
                         return _redis;
                     }
                 }
@@ -49,28 +44,83 @@ namespace Redis.Extension
             }
         }
 
-        static ConnectionMultiplexer GetManager(string connectionString = null)
+        public IEnumerable<RedisKey> AllKeys(int database = 0)
         {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                connectionString = ConfigurationManager.AppSettings["redis"] ?? "localhost";
-            }
-            return ConnectionMultiplexer.Connect(connectionString);
+            return GetServer(database).Keys();
         }
 
-        /// <summary>
-        /// todo
-        /// </summary>
-        /// <param name="configurationOptions"></param>
-        /// <returns></returns>
-        static ConnectionMultiplexer GetManager(ConfigurationOptions configurationOptions)
+        public IEnumerable<RedisKey> Search(RedisValue pattern, int database = 0)
         {
-            return ConnectionMultiplexer.Connect(configurationOptions);
+            return GetServer(database).Keys(pattern: pattern);
+        }
+
+        public long CountKeys(int database = 0)
+        {
+            return GetServer(database).DatabaseSize(database);
+        }
+
+        public IServer GetServer(int database = 0)
+        {
+            return ConnectionMultiplexer.GetServer(ConnectionMultiplexer.GetEndPoints()[database]);
+        }
+
+        public bool AddOrUpdate(RedisKey key, RedisValue value, TimeSpan? expiry = null)
+        {
+            return ConnectionMultiplexer.GetDatabase().StringSet(key, value, expiry);
+        }
+
+        public bool AddOrUpdate(RedisKey key, object obj, TimeSpan? expiry = null)
+        {
+            var value = JsonConvert.SerializeObject(obj);
+            return ConnectionMultiplexer.GetDatabase().StringSet(key, value, expiry);
+        }
+
+        public RedisValue GetOrAdd(RedisKey key, Func<RedisValue> getValueFunc = null, TimeSpan? expiry = null)
+        {
+            if (!ConnectionMultiplexer.GetDatabase().KeyExists(key) && getValueFunc != null)
+            {
+                var value = getValueFunc();
+                ConnectionMultiplexer.GetDatabase().StringSet(key, value, expiry);
+                return value;
+            }
+            return ConnectionMultiplexer.GetDatabase().StringGet(key);
+        }
+
+        public T GetOrAdd<T>(RedisKey key, Func<object> getValueFunc = null, TimeSpan? expiry = null) where T : class
+        {
+            if (!ConnectionMultiplexer.GetDatabase().KeyExists(key) && getValueFunc != null)
+            {
+                var obj = getValueFunc() as T;
+                ConnectionMultiplexer.GetDatabase().StringSet(key, JsonConvert.SerializeObject(obj), expiry);
+                return obj;
+            }
+            return JsonConvert.DeserializeObject<T>(ConnectionMultiplexer.GetDatabase().StringGet(key));
+        }
+
+        public bool Delete(RedisKey key)
+        {
+            return ConnectionMultiplexer.GetDatabase().KeyDelete(key);
+        }
+
+        public void DeleteByPattern(RedisValue pattern)
+        {
+            var keys = Search(pattern);
+            foreach (var redisKey in keys)
+            {
+                Delete(redisKey);
+            }
+        }
+
+        public bool TransExcute(Action<ITransaction> transAction, int database = 0)
+        {
+            var tran = ConnectionMultiplexer.GetDatabase(database).CreateTransaction();
+            transAction(tran);
+            return tran.Execute();
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _redis.Dispose();
         }
     }
 }

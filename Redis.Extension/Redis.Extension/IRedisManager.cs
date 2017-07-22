@@ -52,21 +52,22 @@ namespace Redis.Extension
         bool AddOrUpdate(RedisKey key, RedisValue value, TimeSpan? expiry = null);
 
         /// <summary>
-        /// 添加到Redis
+        /// 使用Json序列化对象，添加到Redis
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="obj"></param>
         /// <param name="expiry"></param>
         /// <returns></returns>
-        bool AddOrUpdate(RedisKey key, object value, TimeSpan? expiry = null);
+        bool AddOrUpdate(RedisKey key, object obj, TimeSpan? expiry = null);
 
         /// <summary>
         /// 从Redis获取
         /// </summary>
         /// <param name="key"></param>
         /// <param name="getValueFunc"></param>
+        /// <param name="expiry"></param>
         /// <returns></returns>
-        RedisValue GetOrAdd(RedisKey key, Func<RedisValue> getValueFunc = null);
+        RedisValue GetOrAdd(RedisKey key, Func<RedisValue> getValueFunc = null, TimeSpan? expiry = null);
 
         /// <summary>
         /// 从Redis获取
@@ -74,8 +75,9 @@ namespace Redis.Extension
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="getValueFunc"></param>
+        /// <param name="expiry"></param>
         /// <returns></returns>
-        T GetOrAdd<T>(RedisKey key, Func<object> getValueFunc = null);
+        T GetOrAdd<T>(RedisKey key, Func<object> getValueFunc = null, TimeSpan? expiry = null) where T : class;
 
         /// <summary>
         /// 删除
@@ -92,12 +94,15 @@ namespace Redis.Extension
         #endregion
 
         #region Transaction
+
         /// <summary>
         /// 事务执行
         /// </summary>
         /// <param name="transAction"></param>
+        /// <param name="database"></param>
         /// <returns></returns>
-        bool TransExcute(Action<ITransaction> transAction);
+        bool TransExcute(Action<ITransaction> transAction, int database = 0);
+
         #endregion
     }
 }
