@@ -16,14 +16,17 @@
     - TransExcute
 
 - Todo
-    - Async
+    - .NET Core
     - Configuration
+    - Log
+    - Async
 
 ## 简介
+- [Redis.Extension GitHub](https://github.com/NeverCL/Redis.Extension)
+- [Redis.Extension nuget](https://www.nuget.org/packages/Redis.Extension/)
+
 - Redis 开源的分布式NoSQL,c语言开发
-
 - Redis 存储结构:key-value
-
 - 持久化(容灾)
     - snapshot(快照)
         - 默认的方式
@@ -31,7 +34,8 @@
         - 配置n秒超过m个key 开始快照
     - Append-only file(aof)
         - 每插入一条就存储
-        - 根据设置频率
+        - appendfilename "appendonly.aof"
+        - appendfsync 设置频率
 
 - 单线程
 
