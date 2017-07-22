@@ -14,6 +14,11 @@ namespace Redis.Extension
         private ConnectionMultiplexer _redis;
         private readonly ConfigurationOptions _configurationOptions;
 
+        public RedisManager() : this(ConfigurationManager.AppSettings["redis"] ?? "localhost")
+        {
+
+        }
+
         public RedisManager(string connectionString)
         {
             _configurationOptions = new ConfigurationOptions
