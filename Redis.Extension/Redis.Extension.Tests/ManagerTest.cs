@@ -10,7 +10,8 @@ namespace Redis.Extension.Tests
     [TestClass]
     public class ManagerTest
     {
-        private static string _connectionString = "127.0.0.1:6379";
+        // private static string _connectionString = "127.0.0.1:6379";
+        private static string _connectionString = "ja.youlijinfu.com:32773";
         readonly RedisManager _redisManager = new RedisManager(_connectionString);
 
         [TestMethod]
