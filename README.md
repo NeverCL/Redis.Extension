@@ -14,6 +14,7 @@
     - DeleteByPattern
     - SearchKeys
     - TransExcute
+    - Subscribe/Publish
 
 - Todo
     - .NET Core
@@ -25,8 +26,7 @@
 - [Redis.Extension GitHub](https://github.com/NeverCL/Redis.Extension)
 - [Redis.Extension nuget](https://www.nuget.org/packages/Redis.Extension/)
 
-- Redis 开源的分布式NoSQL,c语言开发
-- Redis 存储结构:key-value
+- Redis 开源的分布式NoSQL,c语言开发,存储结构:key-value
 - 持久化(容灾)
     - snapshot(快照)
         - Redis默认持久化方式，每次保存RDB的时候，fork()出1个子进程进行持久化
@@ -64,6 +64,17 @@
 - 配置
     - slaveof 127.0.0.1 6379
 
+## API
+- 具体的API调用可以 可以直接参考ManagerTest。
+- AddOrUpdate 支持指定具体时间点 缓存失效
+- AddOrUpdate 支持指定具体时间点 缓存失效
+- GetOrAdd 支持检测缓存 再读库操作
+- DeleteByPattern 支持根据key模糊删除
+- SearchKeys 支持查询Keys
+- TransExcute 支持Redis事务执行
+- Subscribe 支持快速订阅消息
+- Publish 支持快速发布消息
+
 ## 备份与恢复
 - appendfilename "appendonly.aof"
 
@@ -79,3 +90,4 @@
 - subscribe publish
 - keys *
 - info
+
