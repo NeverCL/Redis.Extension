@@ -50,6 +50,14 @@
     - 直接启动
         - redis-server.exe redis.windows.conf
 
+- Linux
+    - 源码包
+    - docker
+
+- Mac
+    - brew
+    - docker
+
 ## 主从复制
 - 过程
     - 当设置好slave服务器后，slave会建立和master的连接，然后发送sync命令。
