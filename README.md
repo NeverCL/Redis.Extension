@@ -2,13 +2,15 @@
 .NET 基于StackExchange.Redis的扩展
 
 ## 目录
-- 简介
+- [简介](#简介)
 
-- 主从复制
+- [安装](#安装)
 
-- 备份与恢复
+- [主从复制](#主从复制)
 
-- API
+- [备份与恢复](#备份与恢复)
+
+- [API](#api)
     - AddOrUpdate
     - GetOrAdd
     - DeleteByPattern
@@ -16,15 +18,18 @@
     - TransExcute
     - Subscribe/Publish
 
+- [命令](#命令)
+
 - Todo
-    - .NET Core
-    - Configuration
+    - **Sentinel**
+    - **.NET Core**
+    - **Configuration**
     - Log
     - Async
 
 ## 简介
-- [Redis.Extension GitHub](https://github.com/NeverCL/Redis.Extension)
-- [Redis.Extension nuget](https://www.nuget.org/packages/Redis.Extension/)
+- [Redis.Extension GitHub](https://github.com/NeverCL/Redis.Extension)(欢迎Fork Star)
+- [Redis.Extension nuget](https://www.nuget.org/packages/Redis.Extension/)(Install-Package Redis.Extension)
 
 - Redis 开源的分布式NoSQL,c语言开发,存储结构:key-value
 - 持久化(容灾)
@@ -72,6 +77,11 @@
 - 配置
     - slaveof 127.0.0.1 6379
 
+## 备份与恢复
+- appendfilename "appendonly.aof"
+
+- snapshot "dump.rdb"
+
 ## API
 - 具体的API调用可以 可以直接参考ManagerTest。
 - AddOrUpdate 支持指定具体时间点 缓存失效
@@ -83,12 +93,7 @@
 - Subscribe 支持快速订阅消息
 - Publish 支持快速发布消息
 
-## 备份与恢复
-- appendfilename "appendonly.aof"
-
-- snapshot "dump.rdb"
-
-## 使用
+## 命令
 - string:   set | get
 - hash:     hmset | hgetall
 - list:     lpush | lrange
@@ -98,4 +103,3 @@
 - subscribe publish
 - keys *
 - info
-
