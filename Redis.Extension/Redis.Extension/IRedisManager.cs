@@ -41,13 +41,13 @@ namespace Redis.Extension
         long CountKeys(int database = 0);
         #endregion
 
-        #region Object Set Get
+        #region Object Add Get Delete
         /// <summary>
         /// 添加到Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <param name="expiry"></param>
+        /// <param name="expiry">有效期</param>
         /// <returns></returns>
         bool AddOrUpdate(RedisKey key, RedisValue value, TimeSpan? expiry = null);
 
@@ -56,9 +56,27 @@ namespace Redis.Extension
         /// </summary>
         /// <param name="key"></param>
         /// <param name="obj"></param>
-        /// <param name="expiry"></param>
+        /// <param name="expiry">有效期</param>
         /// <returns></returns>
         bool AddOrUpdate(RedisKey key, object obj, TimeSpan? expiry = null);
+
+        /// <summary>
+        /// 使用Json序列化对象，添加到Redis
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="obj"></param>
+        /// <param name="expireTime">过期时间</param>
+        /// <returns></returns>
+        bool AddOrUpdate(RedisKey key, object obj, DateTime expireTime);
+
+        /// <summary>
+        /// 添加到Redis
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireTime">到期时间</param>
+        /// <returns></returns>
+        bool AddOrUpdate(RedisKey key, RedisValue value, DateTime expireTime);
 
         /// <summary>
         /// 从Redis获取

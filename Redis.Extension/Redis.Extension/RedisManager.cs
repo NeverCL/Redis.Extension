@@ -80,6 +80,16 @@ namespace Redis.Extension
             return ConnectionMultiplexer.GetDatabase().StringSet(key, value, expiry);
         }
 
+        public bool AddOrUpdate(RedisKey key, object obj, DateTime expireTime)
+        {
+            return AddOrUpdate(key, obj, expireTime - DateTime.Now);
+        }
+
+        public bool AddOrUpdate(RedisKey key, RedisValue value, DateTime expireTime)
+        {
+            return AddOrUpdate(key, value, expireTime - DateTime.Now);
+        }
+
         public RedisValue GetOrAdd(RedisKey key, Func<RedisValue> getValueFunc = null, TimeSpan? expiry = null)
         {
             if (!ConnectionMultiplexer.GetDatabase().KeyExists(key) && getValueFunc != null)
