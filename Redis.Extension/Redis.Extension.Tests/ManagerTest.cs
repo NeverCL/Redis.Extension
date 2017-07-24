@@ -35,6 +35,14 @@ namespace Redis.Extension.Tests
 
 
         [TestMethod]
+        public void TestAddOrUpdateExpireTime()
+        {
+            Assert.IsTrue(_redisManager.AddOrUpdate("hello7", "world", DateTime.Parse("2017-07-24 12:33")));
+            Assert.IsTrue(_redisManager.AddOrUpdate("hello8", new { Name = "hello", Age = "world" }, DateTime.Parse("2017-07-24 12:33")));
+        }
+
+
+        [TestMethod]
         public void TestGetOrAdd()
         {
             Assert.AreEqual(_redisManager.GetOrAdd("hello3", () => "hello world", TimeSpan.FromSeconds(30)), "hello world");
