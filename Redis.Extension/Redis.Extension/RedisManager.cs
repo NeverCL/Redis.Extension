@@ -64,7 +64,7 @@ namespace Redis.Extension
             return GetServer(database).DatabaseSize(database);
         }
 
-        public IServer GetServer(int database = 0)
+        public virtual IServer GetServer(int database = 0)
         {
             return ConnectionMultiplexer.GetServer(ConnectionMultiplexer.GetEndPoints()[database]);
         }
@@ -121,6 +121,21 @@ namespace Redis.Extension
             var tran = ConnectionMultiplexer.GetDatabase(database).CreateTransaction();
             transAction(tran);
             return tran.Execute();
+        }
+
+        public virtual ISubscriber GetSubscriber()
+        {
+            return ConnectionMultiplexer.GetSubscriber();
+        }
+
+        public void Subscribe(RedisChannel channel, Action<RedisChannel, RedisValue> handler)
+        {
+            GetSubscriber().Subscribe(channel, handler);
+        }
+
+        public long Publish(RedisChannel channel, RedisValue message)
+        {
+            return GetSubscriber().Publish(channel, message);
         }
 
         public void Dispose()

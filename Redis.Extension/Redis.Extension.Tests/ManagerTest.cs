@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,8 @@ namespace Redis.Extension.Tests
     [TestClass]
     public class ManagerTest
     {
-        private static string _connectionString = "127.0.0.1:6379";
+        //private static string _connectionString = "127.0.0.1:6379";
+        private static string _connectionString = "ja.youlijinfu.com:32773";
         readonly RedisManager _redisManager = new RedisManager(_connectionString);
 
         [TestMethod]
@@ -58,6 +60,27 @@ namespace Redis.Extension.Tests
            });
 
             Assert.IsTrue(rst);
+        }
+
+
+        [TestMethod]
+        public void TestSubPub()
+        {
+            //ISubscriber sub = _redisManager.ConnectionMultiplexer.GetSubscriber();
+
+
+            _redisManager.Subscribe("sub", (channel, message) =>
+            {
+                Debug.WriteLine("m1:" + message);
+                Trace.WriteLine("m1:" + message);
+            });
+            _redisManager.Subscribe("sub", (channel, message) =>
+            {
+                Debug.WriteLine("m2:" + message);
+                Trace.WriteLine("m2:" + message);
+            });
+
+            Debug.WriteLine(_redisManager.Publish("sub", "test"));
         }
     }
 }

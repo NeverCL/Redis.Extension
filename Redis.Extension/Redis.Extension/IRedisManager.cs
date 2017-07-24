@@ -104,5 +104,23 @@ namespace Redis.Extension
         bool TransExcute(Action<ITransaction> transAction, int database = 0);
 
         #endregion
+
+        #region SubPub
+
+        /// <summary>
+        /// 订阅
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="handler"></param>
+        void Subscribe(RedisChannel channel, Action<RedisChannel, RedisValue> handler);
+
+        /// <summary>
+        /// 发布
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        long Publish(RedisChannel channel, RedisValue message);
+        #endregion
     }
 }
